@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* فونت‌ها */
+  --font-sans:
+    var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-latin: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* پالت دارک آبی اختصاصی MyAnimeMap */
+  --color-canvas: #060b16;
+  --color-surface: #0c1527;
+  --color-surface-elevated: #12203b;
+  --color-border-subtle: #1c2e4f;
+  --color-border-strong: #2b4575;
+
+  /* رنگ‌های تاکیدی (Primary Blue/Sky) */
+  --color-primary: #38bdf8;
+  --color-primary-hover: #0ea5e9;
+  --color-accent: #2563eb;
+
+  /* رنگ‌های متن */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  /* رنگ‌های وضعیت واچ‌لیست */
+  --color-status-watching: #38bdf8;
+  --color-status-completed: #10b981;
+  --color-status-planned: #f59e0b;
+  --color-status-paused: #a855f7;
+  --color-status-dropped: #f43f5e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: dark;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* اسکرول‌بار سفارشی متناسب با تم دارک آبی */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #060b16;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1c2e4f;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2b4575;
+  }
 }
