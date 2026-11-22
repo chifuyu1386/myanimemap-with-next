@@ -1,35 +1,50 @@
-import { getTrendingAnime } from "@/lib/kitsu/queries";
-import { SUBTYPE_LABELS_FA } from "@/lib/mappers/anime-mapper";
-import { formatScore } from "@/lib/utils/format";
+import { getAnimeList, getTrendingAnime } from "@/lib/kitsu/queries";
+import { HeroShowcase } from "@/features/anime/HeroShowcase";
+import { AnimeGridSection } from "@/features/anime/AnimeGridSection";
 
 export default async function HomePage() {
-  const trending = await getTrendingAnime(6);
+  const [trending, airingRes, popularRes, topRatedRes, moviesRes] = await Promise.all([
+    getTrendingAnime(5, 3600),
+    getAnimeList(
+      { status: "current", sort: "popularity", limit: 10 },
+      { revalidate: 3600 }
+    ),
+    getAnimeList({ sort: "popularity", limit: 10 }, { revalidate: 3600 }),
+    getAnimeList({ sort: "rating", limit: 10 }, { revalidate: 3600 }),
+    getAnimeList({ subtype: "movie", sort: "rating", limit: 10 }, { revalidate: 3600 }),
+  ]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-primary mb-2 text-3xl font-bold">MyAnimeMap</h1>
-      <p className="text-text-secondary mb-8">
-        تست اتصال مستقیم به Kitsu API (انیمه‌های ترند روز):
-      </p>
+    <main className="mx-auto max-w-7xl space-y-12 px-4 py-8 sm:px-6">
+      <HeroShowcase items={trending} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {trending.map((anime) => (
-          <div
-            key={anime.id}
-            className="border-border-subtle bg-surface rounded-xl border p-4"
-          >
-            <h2 className="text-text-primary font-semibold" dir="ltr">
-              {anime.title}
-            </h2>
-            <div className="text-text-secondary mt-2 flex items-center justify-between text-sm">
-              <span>{SUBTYPE_LABELS_FA[anime.subtype]}</span>
-              <span className="text-primary">
-                امتیاز: {formatScore(anime.ratingOutOf10)}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <AnimeGridSection
+        title="در حال پخش این فصل"
+        subtitle="محبوب‌ترین انیمه‌های در حال پخش هم‌اکنون"
+        href="/explore?status=current&sort=popularity"
+        items={airingRes.items}
+      />
+
+      <AnimeGridSection
+        title="محبوب‌ترین‌های تاریخ"
+        subtitle="پرطرفدارترین انیمه‌ها در میان کاربران"
+        href="/explore?sort=popularity"
+        items={popularRes.items}
+      />
+
+      <AnimeGridSection
+        title="برترین امتیازها"
+        subtitle="تحسین‌شده‌ترین انیمه‌ها بر اساس میانگین امتیاز"
+        href="/explore?sort=rating"
+        items={topRatedRes.items}
+      />
+
+      <AnimeGridSection
+        title="سینمایی‌های برتر"
+        subtitle="بهترین فیلم‌های انیمه‌ای برای یک آخر هفته عالی"
+        href="/explore?subtype=movie&sort=rating"
+        items={moviesRes.items}
+      />
     </main>
   );
 }
