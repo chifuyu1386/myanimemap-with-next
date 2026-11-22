@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Vazirmatn } from "next/font/google";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { ToastContainer } from "@/components/ui/ToastContainer";
 import "./globals.css";
 
 const vazirmatn = Vazirmatn({
@@ -31,8 +34,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl" className={`${vazirmatn.variable} ${inter.variable}`}>
-      <body className="bg-canvas text-text-primary selection:bg-primary/30 selection:text-text-primary min-h-screen">
-        <QueryProvider>{children}</QueryProvider>
+      <body className="bg-canvas text-text-primary selection:bg-primary/30 selection:text-text-primary flex min-h-screen flex-col">
+        <QueryProvider>
+          <Navbar />
+          <div className="flex-1">{children}</div>
+          <Footer />
+          <ToastContainer />
+        </QueryProvider>
       </body>
     </html>
   );
