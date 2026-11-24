@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyAnimeMap
 
-## Getting Started
+A modern, RTL-first (Persian) anime discovery and personal watchlist web application built with **Next.js 16**, **React 19**, **TypeScript**, **Tailwind CSS v4**, **TanStack Query v5**, **Zustand**, and **React Hook Form + Zod**, powered by the **Kitsu JSON:API**.
 
-First, run the development server:
+> 🔗 **Live Demo:** `[Add your Vercel URL here]`
+
+---
+
+## ✨ Key Features
+
+- **Curated Discovery Home:** Hero trending showcase slider + curated rows (Currently Airing, All-Time Popular, Top Rated, Top Anime Movies) rendered via Next.js Server Components with ISR caching.
+- **URL-Synced Advanced Explore (`/explore`):** Multi-filter search (debounced text query, genre chips, status, format, season, year, sorting) synchronized with URL `searchParams` and powered by `useInfiniteQuery`.
+- **Global Quick Search (`Ctrl + K` / `⌘ + K`):** Accessible command-palette modal to jump to any anime from anywhere in the app.
+- **Rich Anime Details (`/anime/[slug]`):** Dynamic SEO metadata, YouTube trailer modal, related media links, and lazy-loaded **Characters** & **Episodes** tabs.
+- **Personal Watchlist Dashboard (`/watchlist`):** Client-side persisted watchlist with status tabs, instant `+1/-1` episode tracking, personal scoring (1–10), notes validated via **React Hook Form + Zod**, real-time watch stats, and **JSON Backup (Import/Export)** with Zod schema validation.
+- **Custom Dark-Blue UI System:** Handcrafted accessible components (Modal with Portal & Escape/scroll-lock, Tabs, Select, Toast notifications, Skeletons) without external UI component libraries.
+
+---
+
+## 🏗️ Architectural Highlights
+
+- **Typed JSON:API Adapter & Normalizer (`src/lib/kitsu/`):** Resolves Kitsu `data` + `included` relationships, applies sparse fieldsets (`fields[anime]`) to minimize payload size, and guarantees null-safe domain types across the UI.
+- **Next.js 16 Cache Components & Streaming Boundaries:** Route-hook dependent navigation is isolated inside `<Suspense>` boundaries to preserve static prerendering on dynamic routes (`/anime/[slug]`).
+- **Hydration-Safe Persistence:** Uses React 19 `useSyncExternalStore` (`useHasHydrated`) to synchronize Zustand `localStorage` state and React Portals cleanly without SSR hydration mismatches.
+- **Resilient Self-Hosted Fonts:** Variable fonts (`Vazirmatn` & `Inter`) bundled locally via Fontsource for consistent offline/network-independent builds.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack, Cache Components) & React 19
+- **Language:** TypeScript (Strict Mode)
+- **Styling:** Tailwind CSS v4 (`@theme` CSS-first design tokens, RTL logical properties)
+- **Server State:** TanStack Query v5
+- **Client State:** Zustand (`persist` middleware)
+- **Forms & Validation:** React Hook Form + Zod
+- **Icons:** Lucide React
+- **API:** Kitsu API (`https://kitsu.app/api/edge`)
+
+---
+
+## 🚀 Getting Started
 
 ```bash
+git clone https://github.com/<YOUR-USERNAME>/myanimemap.git
+cd myanimemap
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
