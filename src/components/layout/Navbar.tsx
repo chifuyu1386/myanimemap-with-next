@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, BookmarkCheck, Home, Menu, Search, Sparkles, X } from "lucide-react";
+import { BookmarkCheck, Compass, Home, Menu, Search, Sparkles, X } from "lucide-react";
 import { useWatchlistStore } from "@/stores/watchlist-store";
 import { useHasHydrated } from "@/lib/utils/use-has-hydrated";
 import { toPersianNumber } from "@/lib/utils/format";
@@ -16,11 +16,104 @@ const NAV_LINKS = [
   { href: "/watchlist", label: "واچ‌لیست من", icon: BookmarkCheck },
 ];
 
-export function Navbar() {
+function DesktopNavLinks() {
   const pathname = usePathname();
   const isHydrated = useHasHydrated();
   const watchlistCount = useWatchlistStore((s) => Object.keys(s.items).length);
 
+  return (
+    <>
+      {NAV_LINKS.map((link) => {
+        const Icon = link.icon;
+        const isActive =
+          link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors",
+              isActive
+                ? "bg-primary/15 text-primary"
+                : "text-text-secondary hover:bg-surface-elevated hover:text-text-primary"
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            <span>{link.label}</span>
+            {link.href === "/watchlist" && isHydrated && watchlistCount > 0 && (
+              <span className="bg-primary/20 text-primary rounded-md px-1.5 py-0.5 text-xs font-bold">
+                {toPersianNumber(watchlistCount)}
+              </span>
+            )}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+function DesktopNavLinksFallback() {
+  return (
+    <>
+      {NAV_LINKS.map((link) => {
+        const Icon = link.icon;
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-text-secondary inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium"
+          >
+            <Icon className="h-4 w-4" />
+            <span>{link.label}</span>
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+function MobileNavLinks({ onNavigate }: { onNavigate: () => void }) {
+  const pathname = usePathname();
+  const isHydrated = useHasHydrated();
+  const watchlistCount = useWatchlistStore((s) => Object.keys(s.items).length);
+
+  return (
+    <>
+      {NAV_LINKS.map((link) => {
+        const Icon = link.icon;
+        const isActive =
+          link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={onNavigate}
+            className={cn(
+              "flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium",
+              isActive
+                ? "bg-primary/15 text-primary"
+                : "text-text-secondary hover:bg-surface-elevated"
+            )}
+          >
+            <span className="flex items-center gap-2.5">
+              <Icon className="h-4 w-4" />
+              {link.label}
+            </span>
+            {link.href === "/watchlist" && isHydrated && watchlistCount > 0 && (
+              <span className="bg-primary/20 text-primary rounded-md px-2 py-0.5 text-xs font-bold">
+                {toPersianNumber(watchlistCount)}
+              </span>
+            )}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+export function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -57,34 +150,11 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* لینک‌های دسکتاپ */}
+          {/* لینک‌های دسکتاپ با Suspense برای پشتیبانی از Cache Components */}
           <nav className="hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((link) => {
-              const Icon = link.icon;
-              const isActive =
-                link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-primary/15 text-primary"
-                      : "text-text-secondary hover:bg-surface-elevated hover:text-text-primary"
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{link.label}</span>
-                  {link.href === "/watchlist" && isHydrated && watchlistCount > 0 && (
-                    <span className="bg-primary/20 text-primary rounded-md px-1.5 py-0.5 text-xs font-bold">
-                      {toPersianNumber(watchlistCount)}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+            <Suspense fallback={<DesktopNavLinksFallback />}>
+              <DesktopNavLinks />
+            </Suspense>
           </nav>
 
           {/* دکمه سرچ و منوی موبایل */}
@@ -123,35 +193,9 @@ export function Navbar() {
         {isMobileMenuOpen && (
           <div className="border-border-subtle bg-surface border-t px-4 py-3 md:hidden">
             <nav className="flex flex-col gap-1">
-              {NAV_LINKS.map((link) => {
-                const Icon = link.icon;
-                const isActive =
-                  link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
-
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={cn(
-                      "flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium",
-                      isActive
-                        ? "bg-primary/15 text-primary"
-                        : "text-text-secondary hover:bg-surface-elevated"
-                    )}
-                  >
-                    <span className="flex items-center gap-2.5">
-                      <Icon className="h-4 w-4" />
-                      {link.label}
-                    </span>
-                    {link.href === "/watchlist" && isHydrated && watchlistCount > 0 && (
-                      <span className="bg-primary/20 text-primary rounded-md px-2 py-0.5 text-xs font-bold">
-                        {toPersianNumber(watchlistCount)}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+              <Suspense fallback={null}>
+                <MobileNavLinks onNavigate={() => setIsMobileMenuOpen(false)} />
+              </Suspense>
             </nav>
           </div>
         )}

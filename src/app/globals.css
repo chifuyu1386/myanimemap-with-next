@@ -5,6 +5,9 @@
   --font-sans:
     var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-latin: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    "Vazirmatn Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-latin: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 
   /* پالت دارک آبی اختصاصی MyAnimeMap */
   --color-canvas: #060b16;
